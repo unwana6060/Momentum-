@@ -20,6 +20,26 @@ const cities: CityTime[] = [
   { city: 'Sydney', country: 'Australia', timezone: 'Australia/Sydney', flag: '🇦🇺' },
   { city: 'Sao Paulo', country: 'Brazil', timezone: 'America/Sao_Paulo', flag: '🇧🇷' },
   { city: 'New Delhi', country: 'India', timezone: 'Asia/Kolkata', flag: '🇮🇳' },
+  { city: 'Paris', country: 'France', timezone: 'Europe/Paris', flag: '🇫🇷' },
+  { city: 'Rome', country: 'Italy', timezone: 'Europe/Rome', flag: '🇮🇹' },
+  { city: 'Moscow', country: 'Russia', timezone: 'Europe/Moscow', flag: '🇷🇺' },
+  { city: 'Beijing', country: 'China', timezone: 'Asia/Shanghai', flag: '🇨🇳' },
+  { city: 'Seoul', country: 'South Korea', timezone: 'Asia/Seoul', flag: '🇰🇷' },
+  { city: 'Cairo', country: 'Egypt', timezone: 'Africa/Cairo', flag: '🇪🇬' },
+  { city: 'Nairobi', country: 'Kenya', timezone: 'Africa/Nairobi', flag: '🇰🇪' },
+  { city: 'Johannesburg', country: 'South Africa', timezone: 'Africa/Johannesburg', flag: '🇿🇦' },
+  { city: 'Mexico City', country: 'Mexico', timezone: 'America/Mexico_City', flag: '🇲🇽' },
+  { city: 'Toronto', country: 'Canada', timezone: 'America/Toronto', flag: '🇨🇦' },
+  { city: 'Amsterdam', country: 'Netherlands', timezone: 'Europe/Amsterdam', flag: '🇳🇱' },
+  { city: 'Madrid', country: 'Spain', timezone: 'Europe/Madrid', flag: '🇪🇸' },
+  { city: 'Bangkok', country: 'Thailand', timezone: 'Asia/Bangkok', flag: '🇹🇭' },
+  { city: 'Jakarta', country: 'Indonesia', timezone: 'Asia/Jakarta', flag: '🇮🇩' },
+  { city: 'Istanbul', country: 'Turkey', timezone: 'Europe/Istanbul', flag: '🇹🇷' },
+  { city: 'Zurich', country: 'Switzerland', timezone: 'Europe/Zurich', flag: '🇨🇭' },
+  { city: 'Stockholm', country: 'Sweden', timezone: 'Europe/Stockholm', flag: '🇸🇪' },
+  { city: 'Los Angeles', country: 'USA', timezone: 'America/Los_Angeles', flag: '🇺🇸' },
+  { city: 'Chicago', country: 'USA', timezone: 'America/Chicago', flag: '🇺🇸' },
+  { city: 'Buenos Aires', country: 'Argentina', timezone: 'America/Argentina/Buenos_Aires', flag: '🇦🇷' },
 ];
 
 export default function WorldClockPage() {
@@ -56,7 +76,7 @@ export default function WorldClockPage() {
         <p className="text-momentum-text-dim text-sm mt-1">Global momentum tracking across timezones.</p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {cities.map((city, index) => (
           <motion.div
             key={city.city}
