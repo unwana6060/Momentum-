@@ -24,43 +24,41 @@ async function startServer() {
 
   // API Routes
   app.post("/api/coach", async (req, res) => {
-    const { message, history } = req.body;
-    
-    if (!process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ error: "GEMINI_API_KEY is not configured on server." });
-    }
-
     try {
-      if (!ai) {
-        throw new Error("AI client not initialized.");
-      }
+      const { message, history } = req.body;
       
-      const chat = ai.chats.create({
-        model: "gemini-2.0-flash", // Using gemini-2.0-flash for high compatibility
-        history: history || [],
+      if (!process.env.GEMINI_API_KEY) {
+        return res.status(500).json({ error: "GEMINI_API_KEY is not configured on server." });
+      }
+
+      if (!ai) {
+        return res.status(500).json({ error: "AI client not initialized." });
+      }
+
+      // Convert history to contents format for generateContent
+      // history items: { role: 'user' | 'model', parts: [{ text: string }] }
+      const contents = history ? [...history, { role: 'user', parts: [{ text: message }] }] : [{ role: 'user', parts: [{ text: message }] }];
+      
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents,
         config: {
           systemInstruction: "You are an elite, highly-motivating AI habit coach for the 'Momentum' habit tracker app. You help users find consistency, discipline, and achieve their goals. Keep responses concise, actionable, and formatted nicely.",
           temperature: 0.7,
-          maxOutputTokens: 1024,
         },
       });
 
-      const result = await chat.sendMessage({ message });
-      
-      if (!result || !result.text) {
+      if (!response || !response.text) {
         throw new Error("Received empty response from AI.");
       }
       
-      res.json({ text: result.text });
+      return res.json({ text: response.text });
     } catch (error: any) {
-      console.error("Gemini Error Context:", {
-        message: error.message,
-        stack: error.stack,
-        historyLength: history?.length
-      });
-      res.status(500).json({ 
+      console.error("Gemini Error:", error);
+      // Ensure we always return JSON
+      return res.status(500).json({ 
         error: "Failed to connect to the AI core.",
-        details: error.message 
+        details: error.message || "Unknown error"
       });
     }
   });
