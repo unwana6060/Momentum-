@@ -1,3 +1,4 @@
+// Finalized Vercel Function for AI Coach Integration
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
