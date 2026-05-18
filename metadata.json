@@ -1,0 +1,6 @@
+{
+  "name": "Momentum",
+  "description": "Momentum is a clean, futuristic, AI-powered habit tracker designed to help users build consistency, discipline, and long-term self-improvement habits.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

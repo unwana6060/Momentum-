@@ -1,0 +1,69 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Stores user settings and gamification stats",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "theme": { "type": "string", "enum": ["system", "light", "dark"] },
+        "xp": { "type": "number" },
+        "level": { "type": "number" },
+        "longestStreak": { "type": "number" },
+        "createdAt": { "type": "object", "description": "Firestore Timestamp" },
+        "updatedAt": { "type": "object", "description": "Firestore Timestamp" }
+      },
+      "required": ["email", "createdAt", "updatedAt"]
+    },
+    "Habit": {
+      "title": "Habit",
+      "description": "A habit created by a user",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "color": { "type": "string" },
+        "icon": { "type": "string" },
+        "scheduleType": { "type": "string", "enum": ["daily", "weekly", "specific_days"] },
+        "scheduleDays": { "type": "array", "items": { "type": "number" } },
+        "currentStreak": { "type": "number" },
+        "longestStreak": { "type": "number" },
+        "totalCompletions": { "type": "number" },
+        "createdAt": { "type": "object", "description": "Firestore Timestamp" },
+        "updatedAt": { "type": "object", "description": "Firestore Timestamp" }
+      },
+      "required": ["userId", "title", "scheduleType", "createdAt", "updatedAt"]
+    },
+    "HabitCompletion": {
+      "title": "Habit Completion",
+      "description": "Records when a habit is completed",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "habitId": { "type": "string" },
+        "date": { "type": "string", "description": "YYYY-MM-DD format" },
+        "completedAt": { "type": "object", "description": "Firestore Timestamp" },
+        "status": { "type": "string", "enum": ["completed", "missed"] }
+      },
+      "required": ["userId", "habitId", "date", "completedAt", "status"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles"
+    },
+    "/habits/{habitId}": {
+      "schema": { "$ref": "#/entities/Habit" },
+      "description": "Habit definitions for a user"
+    },
+    "/habits/{habitId}/completions/{completionId}": {
+      "schema": { "$ref": "#/entities/HabitCompletion" },
+      "description": "Daily completions for a habit"
+    }
+  }
+}
