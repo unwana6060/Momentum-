@@ -46,17 +46,12 @@ export default function AICoach() {
         })
       });
 
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const text = await response.text();
-        throw new Error(`Server returned non-JSON response: ${text.slice(0, 100)}`);
-      }
-
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.details || data.error || 'AI sequence failed');
+        const errorData = await response.json();
+        throw new Error(errorData.details || 'AI sequence failed');
       }
+      
+      const data = await response.json();
       
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),

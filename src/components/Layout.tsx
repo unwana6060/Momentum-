@@ -17,12 +17,12 @@ export default function Layout() {
     { to: '/calendar', icon: Calendar, label: t('calendar') },
     { to: '/analytics', icon: BarChart2, label: t('analytics') },
     { to: '/coach', icon: Zap, label: t('coach') },
-    { to: '/clock', icon: Globe, label: 'Clock' },
+    { to: '/clock', icon: Globe, label: 'World Clock' },
     { to: '/profile', icon: UserIcon, label: t('profile') },
   ];
 
   return (
-    <div className="flex flex-col h-screen h-[100svh] w-full max-w-md mx-auto relative overflow-hidden bg-momentum-bg/50 backdrop-blur-sm sm:shadow-2xl sm:shadow-black/50 sm:border sm:border-white/10 sm:rounded-[48px] sm:my-4 sm:h-[calc(100svh-2rem)] transition-all duration-500">
+    <div className="flex flex-col h-screen h-[100svh] w-full sm:max-w-md mx-auto relative sm:overflow-hidden bg-momentum-bg/50 backdrop-blur-sm sm:shadow-2xl sm:shadow-black/50 sm:border sm:border-white/10 sm:rounded-[48px] sm:my-4 sm:h-[calc(100svh-2rem)] transition-all duration-500">
       {/* Header */}
       <header className="flex-none px-6 py-4 flex items-center justify-between z-20 bg-momentum-bg/80 backdrop-blur-md border-b border-white/5 sm:rounded-t-[48px]">
         <Logo size="sm" />
@@ -38,14 +38,14 @@ export default function Layout() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto z-10 overscroll-contain min-h-0">
-        <div className="pb-32 px-1">
+      <main className="flex-1 overflow-y-auto z-10 overscroll-contain min-h-0 relative">
+        <div className="pb-32 px-4 sm:px-6">
           <Outlet />
         </div>
       </main>
 
       {/* Bottom Navigation */}
-      <div className="flex-none z-20 pb-safe px-6 bg-[rgba(15,23,42,0.9)] backdrop-blur-[20px] border-t border-[rgba(255,255,255,0.05)] pb-6 sm:rounded-b-[48px]">
+      <div className="flex-none z-20 pb-safe sm:px-6 bg-[rgba(15,23,42,0.95)] backdrop-blur-[20px] border-t border-[rgba(255,255,255,0.05)] pb-6 sm:rounded-b-[48px]">
         <nav className="flex justify-between items-center">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to || (item.to !== '/' && location.pathname.startsWith(item.to));

@@ -24,41 +24,49 @@ async function startServer() {
 
   // API Routes
   app.post("/api/coach", async (req, res) => {
+    const { message, history } = req.body;
+    
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: "GEMINI_API_KEY is not configured on server." });
+    }
+
     try {
-      const { message, history } = req.body;
-      
-      if (!process.env.GEMINI_API_KEY) {
-        return res.status(500).json({ error: "GEMINI_API_KEY is not configured on server." });
-      }
-
       if (!ai) {
-        return res.status(500).json({ error: "AI client not initialized." });
+        throw new Error("AI client not initialized.");
       }
-
-      // Convert history to contents format for generateContent
-      // history items: { role: 'user' | 'model', parts: [{ text: string }] }
-      const contents = history ? [...history, { role: 'user', parts: [{ text: message }] }] : [{ role: 'user', parts: [{ text: message }] }];
       
-      const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents,
+      const chat = ai.chats.create({
+        model: "gemini-flash-latest", 
+        history: history || [],
         config: {
           systemInstruction: "You are an elite, highly-motivating AI habit coach for the 'Momentum' habit tracker app. You help users find consistency, discipline, and achieve their goals. Keep responses concise, actionable, and formatted nicely.",
           temperature: 0.7,
         },
       });
 
-      if (!response || !response.text) {
+      const result = await chat.sendMessage({ message });
+      
+      if (!result || !result.text) {
         throw new Error("Received empty response from AI.");
       }
       
-      return res.json({ text: response.text });
+      res.json({ text: result.text });
     } catch (error: any) {
-      console.error("Gemini Error:", error);
-      // Ensure we always return JSON
-      return res.status(500).json({ 
+      let friendlyMessage = error.message;
+      
+      // Better handling for Quota Exceeded error
+      if (error.message.includes("RESOURCE_EXHAUSTED") || error.message.includes("429")) {
+        friendlyMessage = "The AI Coach is currently receiving too many requests. Please try again in 30 seconds.";
+      }
+
+      console.error("Gemini Error Context:", {
+        message: error.message,
+        historyLength: history?.length
+      });
+      
+      res.status(500).json({ 
         error: "Failed to connect to the AI core.",
-        details: error.message || "Unknown error"
+        details: friendlyMessage
       });
     }
   });
