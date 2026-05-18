@@ -21,9 +21,9 @@ export default function Layout() {
   ];
 
   return (
-    <div className="flex flex-col h-[100dvh] w-full max-w-md mx-auto relative overflow-hidden shadow-2xl shadow-black/50 sm:border sm:border-white/10 sm:rounded-[48px] sm:my-4 sm:h-[calc(100dvh-2rem)] bg-momentum-bg/50 backdrop-blur-sm relative transition-all duration-500">
+    <div className="flex flex-col h-screen h-[100svh] w-full max-w-md mx-auto relative overflow-hidden bg-momentum-bg/50 backdrop-blur-sm sm:shadow-2xl sm:shadow-black/50 sm:border sm:border-white/10 sm:rounded-[48px] sm:my-4 sm:h-[calc(100svh-2rem)] transition-all duration-500">
       {/* Header */}
-      <header className="px-6 py-4 flex items-center justify-between z-20 bg-momentum-bg/80 backdrop-blur-md border-b border-white/5">
+      <header className="flex-none px-6 py-4 flex items-center justify-between z-20 bg-momentum-bg/80 backdrop-blur-md border-b border-white/5 sm:rounded-t-[48px]">
         <Logo size="sm" />
         {user && (
           <NavLink to="/profile" className="w-9 h-9 rounded-full overflow-hidden border border-white/10 active:scale-90 transition-transform">
@@ -37,12 +37,14 @@ export default function Layout() {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto z-10 pb-28">
-        <Outlet />
+      <main className="flex-1 overflow-y-auto z-10 overscroll-contain min-h-0">
+        <div className="pb-32 px-1">
+          <Outlet />
+        </div>
       </main>
 
       {/* Bottom Navigation */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 pb-safe pt-2 px-6 bg-[rgba(15,23,42,0.8)] backdrop-blur-[10px] border-t border-[rgba(255,255,255,0.05)] pb-4 sm:rounded-b-[48px]">
+      <div className="flex-none z-20 pb-safe px-6 bg-[rgba(15,23,42,0.9)] backdrop-blur-[20px] border-t border-[rgba(255,255,255,0.05)] pb-6 sm:rounded-b-[48px]">
         <nav className="flex justify-between items-center">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to || (item.to !== '/' && location.pathname.startsWith(item.to));

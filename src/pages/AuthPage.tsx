@@ -63,12 +63,12 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-momentum-bg flex flex-col items-center justify-center p-6 text-momentum-text font-sans">
+    <div className="min-h-screen bg-momentum-bg flex flex-col items-center justify-center p-6 text-momentum-text font-sans overflow-y-auto">
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-md w-full bg-momentum-surface/30 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 shadow-2xl relative overflow-hidden"
+        className="max-w-md w-full bg-momentum-surface/30 backdrop-blur-xl border border-white/10 rounded-[32px] p-6 sm:p-8 shadow-2xl relative my-8"
       >
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-momentum-accent/50 to-transparent"></div>
         

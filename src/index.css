@@ -20,12 +20,24 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-image: radial-gradient(circle at 80% 20%, rgba(59,130,246,0.1), transparent 40%), radial-gradient(circle at 10% 80%, rgba(37,99,235,0.05), transparent 50%);
   background-attachment: fixed;
+  min-height: 100dvh;
 }
 
-/* Hide scrollbar for PWA feel */
+/* Custom minimal scrollbar */
 ::-webkit-scrollbar {
-  display: none;
+  width: 5px;
+  height: 5px;
 }
-* {
-  scrollbar-width: none;
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.4);
 }
