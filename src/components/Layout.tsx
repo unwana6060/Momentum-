@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { Home, Calendar, BarChart2, Zap, User as UserIcon } from 'lucide-react';
+import { Home, Calendar, BarChart2, Zap, Globe, User as UserIcon } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '../lib/utils';
 import { useLanguage } from '../context/LanguageContext';
@@ -17,6 +17,7 @@ export default function Layout() {
     { to: '/calendar', icon: Calendar, label: t('calendar') },
     { to: '/analytics', icon: BarChart2, label: t('analytics') },
     { to: '/coach', icon: Zap, label: t('coach') },
+    { to: '/clock', icon: Globe, label: 'Clock' },
     { to: '/profile', icon: UserIcon, label: t('profile') },
   ];
 

@@ -15,6 +15,7 @@ import CalendarView from './pages/CalendarView';
 import Analytics from './pages/Analytics';
 import AICoach from './pages/AICoach';
 import Profile from './pages/Profile';
+import WorldClockPage from './pages/WorldClockPage';
 import AuthPage from './pages/AuthPage';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -41,6 +42,7 @@ function AppRoutes() {
           <Route path="calendar" element={<CalendarView />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="coach" element={<AICoach />} />
+          <Route path="clock" element={<WorldClockPage />} />
           <Route path="profile" element={<Profile />} />
         </Route>
       </Routes>

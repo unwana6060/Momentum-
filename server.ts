@@ -31,19 +31,37 @@ async function startServer() {
     }
 
     try {
+      if (!ai) {
+        throw new Error("AI client not initialized.");
+      }
+      
       const chat = ai.chats.create({
-        model: "gemini-3-flash-preview",
+        model: "gemini-2.0-flash", // Using gemini-2.0-flash for high compatibility
         history: history || [],
         config: {
           systemInstruction: "You are an elite, highly-motivating AI habit coach for the 'Momentum' habit tracker app. You help users find consistency, discipline, and achieve their goals. Keep responses concise, actionable, and formatted nicely.",
+          temperature: 0.7,
+          maxOutputTokens: 1024,
         },
       });
 
       const result = await chat.sendMessage({ message });
+      
+      if (!result || !result.text) {
+        throw new Error("Received empty response from AI.");
+      }
+      
       res.json({ text: result.text });
     } catch (error: any) {
-      console.error("Gemini Error:", error);
-      res.status(500).json({ error: "Failed to connect to the AI core." });
+      console.error("Gemini Error Context:", {
+        message: error.message,
+        stack: error.stack,
+        historyLength: history?.length
+      });
+      res.status(500).json({ 
+        error: "Failed to connect to the AI core.",
+        details: error.message 
+      });
     }
   });
 

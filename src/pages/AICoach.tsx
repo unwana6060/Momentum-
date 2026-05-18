@@ -46,7 +46,10 @@ export default function AICoach() {
         })
       });
 
-      if (!response.ok) throw new Error('AI sequence failed');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.details || 'AI sequence failed');
+      }
       
       const data = await response.json();
       
@@ -55,12 +58,12 @@ export default function AICoach() {
         role: 'model',
         text: data.text || "I'm not sure what to say. Let's try focusing on your goals!"
       }]);
-    } catch (error) {
+    } catch (error: any) {
        console.error(error);
        setMessages(prev => [...prev, {
          id: (Date.now() + 1).toString(),
          role: 'model',
-         text: "Connection to my cognitive core failed. Stay disciplined anyway."
+         text: `Connection to my cognitive core failed: ${error.message}. Stay disciplined anyway.`
        }]);
     } finally {
       setIsTyping(false);
