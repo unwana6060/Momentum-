@@ -34,16 +34,20 @@ export default function CalendarView() {
         
         const allCompletions: HabitCompletion[] = [];
         
+        const startDate = format(monthStart, 'yyyy-MM-dd');
+        const endDate = format(monthEnd, 'yyyy-MM-dd');
+        
         for (const habitId of habitsIds) {
           const compSnap = await getDocs(query(
             collection(db, `habits/${habitId}/completions`),
-            where('userId', '==', user.uid),
-            where('date', '>=', format(monthStart, 'yyyy-MM-dd')),
-            where('date', '<=', format(monthEnd, 'yyyy-MM-dd'))
+            where('userId', '==', user.uid)
           ));
           
           compSnap.forEach(doc => {
-            allCompletions.push({ id: doc.id, ...doc.data() } as HabitCompletion);
+            const data = doc.data() as HabitCompletion;
+            if (data.date >= startDate && data.date <= endDate) {
+              allCompletions.push({ id: doc.id, ...data } as HabitCompletion);
+            }
           });
         }
         

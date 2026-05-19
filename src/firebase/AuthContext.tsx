@@ -3,6 +3,8 @@ import {
   User, 
   onAuthStateChanged, 
   signInWithPopup, 
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider, 
   signOut as firebaseSignOut,
   signInWithEmailAndPassword,
@@ -16,6 +18,7 @@ interface AuthContextType {
   user: User | null;
   isAdmin: boolean;
   loading: boolean;
+  error: string | null; // Added error state
   signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, pass: string) => Promise<void>;
   registerWithEmail: (email: string, pass: string) => Promise<void>;
@@ -26,6 +29,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   isAdmin: false,
   loading: true,
+  error: null,
   signInWithGoogle: async () => {},
   signInWithEmail: async () => {},
   registerWithEmail: async () => {},
@@ -38,8 +42,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Check for redirect result on load
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result) {
+          console.log('Redirect result:', result);
+        }
+      })
+      .catch((error) => {
+        console.error('Error handling redirect result', error);
+        if (error.code === 'auth/unauthorized-domain') {
+          const currentDomain = window.location.hostname;
+          setError(`Domain Unauthorized: Please add '${currentDomain}' to your Firebase Console > Auth > Settings > Authorized Domains. This is required for Vercel and APK deployments.`);
+        } else {
+          setError(error.message);
+        }
+      });
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       setIsAdmin(currentUser?.email === 'unwanaotung@gmail.com');
@@ -76,11 +98,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+    // Reverting to signInWithPopup as the primary method, even on mobile.
+    // Redirect often fails in WebViews/partitioned storage (like APKs) due to state loss.
+    
     try {
+      setError(null);
       await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error('Error signing in with Google', error);
-      throw error;
+    } catch (popupError: any) {
+      console.warn('Popup login failed, trying redirect...', popupError);
+      
+      // If popup was blocked or failed, try redirect as fallback
+      if (popupError.code === 'auth/popup-blocked' || popupError.code === 'auth/cancelled-popup-request') {
+        try {
+          await signInWithRedirect(auth, provider);
+        } catch (redirectError: any) {
+          console.error('Redirect sign-in failed', redirectError);
+          setError(redirectError.message);
+          throw redirectError;
+        }
+      } else {
+        setError(popupError.message);
+        throw popupError;
+      }
     }
   };
 
@@ -112,7 +151,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAdmin, loading, signInWithGoogle, signInWithEmail, registerWithEmail, signOut }}>
+    <AuthContext.Provider value={{ user, isAdmin, loading, error, signInWithGoogle, signInWithEmail, registerWithEmail, signOut }}>
       {children}
     </AuthContext.Provider>
   );

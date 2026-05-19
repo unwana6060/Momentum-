@@ -6,12 +6,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import Logo from '../components/Logo';
 
 export default function AuthPage() {
-  const { user, signInWithGoogle, signInWithEmail, registerWithEmail } = useAuth();
+  const { user, signInWithGoogle, signInWithEmail, registerWithEmail, error: globalError } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  const error = localError || globalError;
 
   if (user) {
     return <Navigate to="/" />;
@@ -20,11 +22,11 @@ export default function AuthPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setLocalError('Password must be at least 6 characters');
       return;
     }
     setLoading(true);
-    setError(null);
+    setLocalError(null);
     try {
       if (isLogin) {
         await signInWithEmail(email, password);
@@ -39,7 +41,7 @@ export default function AuthPage() {
       if (err.code === 'auth/user-not-found') message = 'No account found with this email';
       if (err.code === 'auth/wrong-password') message = 'Incorrect password';
       
-      setError(message);
+      setLocalError(message);
     } finally {
       setLoading(false);
     }
@@ -47,15 +49,15 @@ export default function AuthPage() {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
-    setError(null);
+    setLocalError(null);
     try {
       await signInWithGoogle();
     } catch (err: any) {
       console.error('Google Auth Error:', err);
       if (err.code === 'auth/unauthorized-domain') {
-        setError(`Domain Unauthorized: Please add '${window.location.hostname}' to your Firebase Console under Auth > Settings > Authorized Domains.`);
+        setLocalError(`Domain Unauthorized: Please add '${window.location.hostname}' to your Firebase Console under Auth > Settings > Authorized Domains.`);
       } else {
-        setError(err.message || 'Google sign-in failed');
+        setLocalError(err.message || 'Google sign-in failed');
       }
     } finally {
       setLoading(false);
@@ -113,14 +115,38 @@ export default function AuthPage() {
 
           <AnimatePresence mode="wait">
             {error && (
-              <motion.p 
+              <motion.div 
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="text-red-400 text-xs text-center font-medium bg-red-400/10 py-2 rounded-xl border border-red-400/20"
+                className="bg-red-400/10 rounded-xl border border-red-400/20 overflow-hidden"
               >
-                {error}
-              </motion.p>
+                <div className="p-4 space-y-2">
+                  <p className="text-red-400 text-xs font-semibold uppercase tracking-wider">Authentication Error</p>
+                  <p className="text-white/80 text-sm leading-relaxed">{error}</p>
+                  {(error.includes('Domain Unauthorized') || error.includes('missing initial state')) && (
+                    <div className="mt-3 p-3 bg-white/5 rounded-lg border border-white/10">
+                      <p className="text-[10px] text-momentum-text-dim uppercase font-bold mb-1">How to fix:</p>
+                      <ol className="text-[11px] text-white/60 space-y-1 list-decimal ml-4">
+                        {error.includes('Domain Unauthorized') ? (
+                          <>
+                            <li>Go to Firebase Console</li>
+                            <li>Authentication {">"} Settings</li>
+                            <li>Authorized Domains</li>
+                            <li>Add your Vercel URL</li>
+                          </>
+                        ) : (
+                          <>
+                            <li>Ensure cookies are enabled in phone settings</li>
+                            <li>Try using Email/Password if Google is blocked</li>
+                            <li>WebView storage may be restricted by the device</li>
+                          </>
+                        )}
+                      </ol>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             )}
           </AnimatePresence>
 

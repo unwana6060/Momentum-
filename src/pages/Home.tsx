@@ -2,12 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../firebase/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { db } from '../firebase/config';
-import { collection, query, where, getDocs, doc, setDoc, deleteDoc, serverTimestamp, orderBy } from 'firebase/firestore';
+import { 
+  collection, 
+  query, 
+  where, 
+  getDocs, 
+  doc, 
+  setDoc, 
+  deleteDoc, 
+  serverTimestamp, 
+  orderBy, 
+  onSnapshot 
+} from 'firebase/firestore';
 import { Habit, HabitCompletion } from '../types';
 import { format } from 'date-fns';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import AdBanner from '../components/AdBanner';
-import { Plus, Check, Search, Calendar as CalendarIcon, Target, Clock, Activity, Zap, Trash2 } from 'lucide-react';
+import { Plus, Check, Search, Calendar as CalendarIcon, Target, Clock, Activity, Zap, Trash2, X } from 'lucide-react';
 import { handleFirestoreError, OperationType } from '../firebase/errorHandler';
 
 function HabitList({
@@ -28,93 +39,98 @@ function HabitList({
 
   return (
     <div className="flex flex-col gap-3">
-      {habits.map((habit) => {
-        const isCompleted = completions.some(c => c.habitId === habit.id && c.status === 'completed');
-        const isConfirming = confirmDeleteId === habit.id;
-        
-        return (
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            key={habit.id}
-            className={`p-4 rounded-[24px] border flex items-center justify-between transition-all bg-momentum-surface-light border-white/5 group`}
-          >
-            <div className="flex items-center gap-4 flex-1">
-              <div 
-                className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl ${
-                  isCompleted ? 'bg-momentum-accent/20' : 'bg-white/5'
-                }`}
-                style={isCompleted ? { color: habit.color || '#3b82f6', textShadow: '0 0 10px currentColor' } : {}}
-              >
-                {habit.icon || '🔥'}
-              </div>
-              <div>
-                <h3 className="text-[14px] font-[600] m-0 text-white">{habit.title}</h3>
-                <p className="text-[11px] text-[#64748B] flex items-center gap-1 mt-[2px] m-0">
-                  <Zap className="w-3 h-3 text-orange-500" /> {habit.currentStreak} {t('streak')}
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              {isConfirming ? (
-                <div className="flex items-center gap-1 animate-in fade-in slide-in-from-right-2 duration-300">
-                  <button
-                    onClick={() => {
-                      onDelete(habit.id);
-                      setConfirmDeleteId(null);
-                    }}
-                    className="px-3 py-2 bg-red-500 text-white text-[10px] font-bold rounded-lg uppercase tracking-wider"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => setConfirmDeleteId(null)}
-                    className="px-3 py-2 bg-white/5 text-white text-[10px] font-bold rounded-lg uppercase tracking-wider"
-                  >
-                    No
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setConfirmDeleteId(habit.id);
-                    // Reset confirmation after 3 seconds if not acted upon
-                    setTimeout(() => {
-                      setConfirmDeleteId(current => current === habit.id ? null : current);
-                    }, 3000);
-                  }}
-                  className="w-10 h-10 rounded-xl flex items-center justify-center text-red-500/40 hover:text-red-500 hover:bg-red-500/10 transition-all"
-                  aria-label="Delete habit"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
-              
-              {!isConfirming && (
-                <button
-                  onClick={() => onToggle(habit.id, !isCompleted)}
-                  className={`w-[40px] h-[40px] rounded-[14px] border-[2px] flex items-center justify-center transition-all ${
-                    isCompleted 
-                      ? 'bg-momentum-accent border-momentum-accent text-white shadow-[0_0_15px_theme("colors.momentum-accent-glow")]' 
-                      : 'bg-transparent border-momentum-accent text-transparent hover:bg-momentum-accent/20'
+      <AnimatePresence initial={false}>
+        {habits.map((habit) => {
+          const isCompleted = completions.some(c => c.habitId === habit.id && c.status === 'completed');
+          const isConfirming = confirmDeleteId === habit.id;
+          
+          return (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              key={habit.id}
+              className={`p-4 rounded-[24px] border flex items-center justify-between transition-all bg-momentum-surface-light border-white/5 group`}
+            >
+              <div className="flex items-center gap-4 flex-1">
+                <div 
+                  className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl ${
+                    isCompleted ? 'bg-momentum-accent/20' : 'bg-white/5'
                   }`}
+                  style={isCompleted ? { color: habit.color || '#3b82f6', textShadow: '0 0 10px currentColor' } : {}}
                 >
-                  {isCompleted ? <Check className="w-5 h-5" strokeWidth={3} /> : null}
-                </button>
-              )}
-            </div>
-          </motion.div>
-        );
-      })}
+                  {habit.icon || '🔥'}
+                </div>
+                <div>
+                  <h3 className="text-[14px] font-[600] m-0 text-white">{habit.title}</h3>
+                  <p className="text-[11px] text-[#64748B] flex items-center gap-1 mt-[2px] m-0">
+                    <Zap className="w-3 h-3 text-orange-500" /> {habit.currentStreak || 0} {t('streak')}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                {isConfirming ? (
+                  <div className="flex items-center gap-1 animate-in fade-in slide-in-from-right-2 duration-300">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(habit.id);
+                        setConfirmDeleteId(null);
+                      }}
+                      className="px-3 py-2 bg-red-500 text-white text-[10px] font-bold rounded-lg uppercase tracking-wider shadow-lg shadow-red-500/20"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfirmDeleteId(null);
+                      }}
+                      className="p-2 bg-white/5 text-white rounded-lg"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setConfirmDeleteId(habit.id);
+                      // Reset after timeout
+                      setTimeout(() => setConfirmDeleteId(curr => curr === habit.id ? null : curr), 4000);
+                    }}
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-red-500/30 hover:text-red-500 hover:bg-red-500/10 transition-all opacity-0 group-hover:opacity-100 sm:opacity-0"
+                    aria-label="Delete habit"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+                
+                {!isConfirming && (
+                  <button
+                    onClick={() => onToggle(habit.id, !isCompleted)}
+                    className={`w-[40px] h-[40px] rounded-[14px] border-[2px] flex items-center justify-center transition-all ${
+                      isCompleted 
+                        ? 'bg-momentum-accent border-momentum-accent text-white shadow-[0_0_15px_theme("colors.momentum-accent-glow")]' 
+                        : 'bg-transparent border-momentum-accent text-transparent hover:bg-momentum-accent/20'
+                    }`}
+                  >
+                    {isCompleted ? <Check className="w-5 h-5" strokeWidth={3} /> : null}
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
       
       {habits.length === 0 && (
-        <div className="text-center py-10 px-4 bg-momentum-surface/50 rounded-3xl border border-white/5 border-dashed">
-          <p className="text-momentum-text-dim mb-4">{t('noHabits')}</p>
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full border border-dashed border-momentum-text-dim/50 text-momentum-text-dim">
-            <Plus className="w-5 h-5" />
+        <div className="text-center py-12 px-6 bg-momentum-surface/30 rounded-[32px] border border-white/5 border-dashed">
+          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
+             <Plus className="w-6 h-6 text-momentum-text-dim" />
           </div>
+          <p className="text-momentum-text-dim text-sm">{t('noHabits')}</p>
         </div>
       )}
     </div>
@@ -133,38 +149,68 @@ export default function Home() {
   useEffect(() => {
     if (!user) return;
     
-    // Fetch Habits
-    const fetchHabitsAndCompletions = async () => {
-      try {
-        const habitsQuery = query(collection(db, 'habits'), where('userId', '==', user.uid));
-        const habitsSnap = await getDocs(habitsQuery);
-        const fetchedHabits = habitsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Habit));
-        setHabits(fetchedHabits);
-        
-        // Fetch Today's completetions
-        const completionsItems: HabitCompletion[] = [];
-        for (const habit of fetchedHabits) {
-            const compQuery = query(
-              collection(db, `habits/${habit.id}/completions`), 
-              where('userId', '==', user.uid),
-              where('date', '==', today)
-            );
-            const compSnap = await getDocs(compQuery);
-            compSnap.forEach(doc => {
-              completionsItems.push({ id: doc.id, habitId: habit.id, ...doc.data() } as HabitCompletion);
-            });
-        }
-        
-        setCompletions(completionsItems);
-      } catch (error) {
-         handleFirestoreError(error, OperationType.GET, 'habits');
-      } finally {
-        setLoading(false);
-      }
-    };
+    setLoading(true);
     
-    fetchHabitsAndCompletions();
-  }, [user, today]);
+    // Subscribe to Habits
+    const habitsQuery = query(
+      collection(db, 'habits'), 
+      where('userId', '==', user.uid)
+    );
+    
+    const unsubscribeHabits = onSnapshot(habitsQuery, (snapshot) => {
+      const fetchedHabits = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Habit));
+      
+      // Sort manually to avoid index requirement
+      fetchedHabits.sort((a, b) => {
+        const timeA = a.createdAt?.toMillis?.() || a.createdAt?.seconds * 1000 || 0;
+        const timeB = b.createdAt?.toMillis?.() || b.createdAt?.seconds * 1000 || 0;
+        return timeB - timeA;
+      });
+
+      setHabits(fetchedHabits);
+      setLoading(false);
+      
+      // For each habit, we need its completion for TODAY
+      // In a real app, you might have a global completions collection or 
+      // fetch them differently. For now, we'll listen to completions for all habits.
+      // This is slightly complex to do reactively for all, so we'll do it focused.
+    }, (error) => {
+      handleFirestoreError(error, OperationType.GET, 'habits');
+      setLoading(false);
+    });
+    
+    return () => unsubscribeHabits();
+  }, [user]);
+
+  // Separate effect for completions (simpler sync)
+  useEffect(() => {
+    if (!user || habits.length === 0) {
+      setCompletions([]);
+      return;
+    }
+
+    // Since completions are nested, we can't easily query ALL habits' completions in one onSnapshot
+    // unless we had a top-level collection. For simplicity, we'll fetch them on demand or
+    // use a more performant way. 
+    // Optimization: Just query today's completions for the specific habits
+    
+    const fetchCompletions = async () => {
+      const todayComps: HabitCompletion[] = [];
+      for (const habit of habits) {
+        const q = query(
+          collection(db, `habits/${habit.id}/completions`),
+          where('date', '==', today)
+        );
+        const snap = await getDocs(q);
+        snap.forEach(doc => {
+          todayComps.push({ id: doc.id, habitId: habit.id, ...doc.data() } as HabitCompletion);
+        });
+      }
+      setCompletions(todayComps);
+    };
+
+    fetchCompletions();
+  }, [user, habits, today]);
 
   const toggleCompletion = async (habitId: string, completed: boolean) => {
     if (!user) return;
@@ -172,8 +218,8 @@ export default function Home() {
     const completionId = `${habitId}_${today}`;
     const completionRef = doc(db, `habits/${habitId}/completions`, completionId);
     
-    // Optimistic update
     if (completed) {
+      // Optimistic
       const newComp: HabitCompletion = {
         id: completionId,
         userId: user.uid,
@@ -187,7 +233,7 @@ export default function Home() {
       try {
         await setDoc(completionRef, {
           userId: user.uid,
-          habitId, // Added missing habitId
+          habitId,
           date: today,
           completedAt: serverTimestamp(),
           status: 'completed'
@@ -207,11 +253,9 @@ export default function Home() {
 
   const deleteHabit = async (habitId: string) => {
     if (!user) return;
-    
     try {
       await deleteDoc(doc(db, 'habits', habitId));
-      setHabits(prev => prev.filter(h => h.id !== habitId));
-      setCompletions(prev => prev.filter(c => c.habitId !== habitId));
+      // Local state is updated by onSnapshot
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, `habits/${habitId}`);
     }
@@ -245,7 +289,6 @@ export default function Home() {
         updatedAt: serverTimestamp()
       };
       await setDoc(newRef, habitData);
-      setHabits(prev => [...prev, { id: newRef.id, ...habitData } as any]);
       setNewHabitTitle('');
       setIsAddModalOpen(false);
     } catch (e) {
@@ -275,7 +318,6 @@ export default function Home() {
         updatedAt: serverTimestamp()
       };
       await setDoc(newRef, habitData);
-      setHabits(prev => [...prev, { id: newRef.id, ...habitData } as any]);
     } catch (e) {
       handleFirestoreError(e, OperationType.CREATE, 'habits');
     }
