@@ -17,36 +17,46 @@ export default function Layout() {
     { to: '/calendar', icon: Calendar, label: t('calendar') },
     { to: '/analytics', icon: BarChart2, label: t('analytics') },
     { to: '/coach', icon: Zap, label: t('coach') },
-    { to: '/clock', icon: Globe, label: 'World Clock' },
     { to: '/profile', icon: UserIcon, label: t('profile') },
   ];
 
   return (
-    <div className="flex flex-col h-screen h-[100svh] w-full sm:max-w-md mx-auto relative sm:overflow-hidden bg-momentum-bg/50 backdrop-blur-sm sm:shadow-2xl sm:shadow-black/50 sm:border sm:border-white/10 sm:rounded-[48px] sm:my-4 sm:h-[calc(100svh-2rem)] transition-all duration-500">
+    <div className="flex flex-col h-screen h-[100dvh] w-full sm:max-w-md mx-auto relative bg-momentum-bg/50 backdrop-blur-sm sm:shadow-2xl sm:shadow-black/50 sm:border sm:border-white/10 sm:rounded-[48px] sm:my-4 sm:h-[calc(100dvh-2rem)] transition-all duration-500 overflow-hidden">
       {/* Header */}
       <header className="flex-none px-6 py-4 flex items-center justify-between z-20 bg-momentum-bg/80 backdrop-blur-md border-b border-white/5 sm:rounded-t-[48px]">
         <Logo size="sm" />
-        {user && (
-          <NavLink to="/profile" className="w-9 h-9 rounded-full overflow-hidden border border-white/10 active:scale-90 transition-transform">
-            <img 
-              src={user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=1f2937&color=f9fafb`} 
-              alt="Profile" 
-              className="w-full h-full object-cover" 
-            />
+        <div className="flex items-center gap-3">
+          <NavLink 
+            to="/clock" 
+            className={({ isActive }) => cn(
+              "w-8 h-8 rounded-full flex items-center justify-center border transition-all active:scale-90",
+              isActive ? "bg-momentum-accent/20 border-momentum-accent/40 text-momentum-accent shadow-[0_0_10px_theme(colors.momentum-accent-glow)]" : "bg-white/5 border-white/10 text-momentum-text-dim hover:text-white"
+            )}
+          >
+            <Globe className="w-4 h-4" />
           </NavLink>
-        )}
+          {user && (
+            <NavLink to="/profile" className="w-9 h-9 rounded-full overflow-hidden border border-white/10 active:scale-90 transition-transform">
+              <img 
+                src={user.photoURL || `https://ui-avatars.com/api/?name=${user.email || 'User'}&background=1f2937&color=f9fafb`} 
+                alt="Profile" 
+                className="w-full h-full object-cover" 
+              />
+            </NavLink>
+          )}
+        </div>
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto z-10 overscroll-contain min-h-0 relative">
-        <div className="pb-32 px-4 sm:px-6">
+      <main className="flex-1 overflow-y-auto z-10 overscroll-contain relative">
+        <div className="pb-48 px-4 sm:px-6">
           <Outlet />
         </div>
       </main>
 
       {/* Bottom Navigation */}
-      <div className="flex-none z-20 pb-safe sm:px-6 bg-[rgba(15,23,42,0.95)] backdrop-blur-[20px] border-t border-[rgba(255,255,255,0.05)] pb-6 sm:rounded-b-[48px]">
-        <nav className="flex justify-between items-center">
+      <div className="flex-none z-20 bg-[rgba(15,23,42,0.95)] backdrop-blur-[24px] border-t border-white/5 pb-safe sm:rounded-b-[48px]">
+        <nav className="flex items-center justify-around px-1 py-4">
           {navItems.map((item) => {
             const isActive = location.pathname === item.to || (item.to !== '/' && location.pathname.startsWith(item.to));
             const Icon = item.icon;
@@ -55,27 +65,27 @@ export default function Layout() {
               <NavLink
                 key={item.to}
                 to={item.to}
-                className="relative py-2 px-1 flex flex-col items-center gap-1 min-w-[50px] flex-1"
+                className="relative flex flex-col items-center gap-1 flex-1 py-1"
               >
-                <div className="relative">
+                <div className="relative mb-[2px]">
                   <Icon 
                     className={cn(
-                      "w-5 h-5 transition-colors duration-300 sm:w-6 sm:h-6", 
-                      isActive ? "text-momentum-accent" : "text-momentum-text-dim"
+                      "w-5 h-5 transition-all duration-300 sm:w-6 sm:h-6", 
+                      isActive ? "text-momentum-accent scale-110" : "text-momentum-text-dim"
                     )} 
                     strokeWidth={isActive ? 2.5 : 2}
                   />
                   {isActive && (
                     <motion.div
                       layoutId="nav-indicator"
-                      className="absolute -inset-2 bg-momentum-accent/20 rounded-full blur-md"
+                      className="absolute -inset-3 bg-momentum-accent/20 rounded-full blur-lg"
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     />
                   )}
                 </div>
                 <span className={cn(
-                  "text-[8px] sm:text-[10px] uppercase tracking-wider font-medium transition-colors duration-300 text-center",
-                  isActive ? "text-momentum-accent font-semibold" : "text-momentum-text-dim"
+                  "text-[10px] uppercase tracking-wider font-bold transition-colors duration-300 text-center block leading-tight",
+                  isActive ? "text-momentum-accent" : "text-momentum-text-dim"
                 )}>
                   {item.label}
                 </span>
@@ -83,7 +93,7 @@ export default function Layout() {
                 {isActive && (
                   <motion.div 
                     layoutId="nav-dot"
-                    className="absolute -top-3 w-1 h-1 rounded-full bg-momentum-accent" 
+                    className="absolute -top-1 w-1 h-1 rounded-full bg-momentum-accent shadow-[0_0_8px_theme(colors.momentum-accent)]" 
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
