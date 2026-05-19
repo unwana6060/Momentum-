@@ -165,7 +165,7 @@ export default function Profile() {
             </button>
           </div>
         </section>
-        
+
         <div className="flex justify-center p-4">
            <button className="px-6 py-2 bg-gradient-to-r from-yellow-600 to-yellow-500 text-white font-bold rounded-full shadow-[0_0_15px_rgba(234,179,8,0.3)] text-sm tracking-wide">
              UPGRADE TO PREMIUM

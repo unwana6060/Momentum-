@@ -39,7 +39,13 @@ const translations: Translations = {
     weeklyPerf: "Weekly Performance",
     strongestHabits: "Strongest Habits",
     completionWord: "completion",
-    sponsored: "Sponsored"
+    sponsored: "Sponsored",
+    addHabit: "Add Habit",
+    addHabitTitle: "Add New Habit",
+    habitName: "Habit Name",
+    cancel: "Cancel",
+    create: "Create",
+    creating: "Creating..."
   },
   es: {
     home: "Hoy",
@@ -71,7 +77,13 @@ const translations: Translations = {
     weeklyPerf: "Rendimiento Semanal",
     strongestHabits: "Hábitos más fuertes",
     completionWord: "completado",
-    sponsored: "Patrocinado"
+    sponsored: "Patrocinado",
+    addHabit: "Añadir Hábito",
+    addHabitTitle: "Nuevo Hábito",
+    habitName: "Nombre del Hábito",
+    cancel: "Cancelar",
+    create: "Crear",
+    creating: "Creando..."
   },
   fr: {
     home: "Aujourd'hui",
@@ -103,7 +115,13 @@ const translations: Translations = {
     weeklyPerf: "Performance Hebdomadaire",
     strongestHabits: "Habitudes les plus fortes",
     completionWord: "complété",
-    sponsored: "Sponsorisé"
+    sponsored: "Sponsorisé",
+    addHabit: "Ajouter",
+    addHabitTitle: "Nouvelle Habitude",
+    habitName: "Nom de l'habitude",
+    cancel: "Annuler",
+    create: "Créer",
+    creating: "Création..."
   },
   de: {
     home: "Heute",
@@ -135,7 +153,13 @@ const translations: Translations = {
     weeklyPerf: "Wöchentliche Leistung",
     strongestHabits: "Stärkste Gewohnheiten",
     completionWord: "abgeschlossen",
-    sponsored: "Gesponsert"
+    sponsored: "Gesponsert",
+    addHabit: "Gewohnheit hinzufügen",
+    addHabitTitle: "Neue Gewohnheit",
+    habitName: "Name der Gewohnheit",
+    cancel: "Abbrechen",
+    create: "Erstellen",
+    creating: "Erstellen..."
   },
   zh: {
     home: "今天",
@@ -167,7 +191,13 @@ const translations: Translations = {
     weeklyPerf: "每周表现",
     strongestHabits: "最强的习惯",
     completionWord: "完成",
-    sponsored: "赞助内容"
+    sponsored: "赞助内容",
+    addHabit: "添加习惯",
+    addHabitTitle: "添加新习惯",
+    habitName: "习惯名称",
+    cancel: "取消",
+    create: "创建",
+    creating: "正在创建..."
   },
   ja: {
     home: "今日",
@@ -199,7 +229,13 @@ const translations: Translations = {
     weeklyPerf: "週間パフォーマンス",
     strongestHabits: "最も強い習慣",
     completionWord: "完了",
-    sponsored: "スポンサー"
+    sponsored: "スポンサー",
+    addHabit: "習慣を追加",
+    addHabitTitle: "新しい習慣を追加",
+    habitName: "習慣名",
+    cancel: "キャンセル",
+    create: "作成",
+    creating: "作成中..."
   },
   pt: {
     home: "Hoje",
@@ -231,7 +267,13 @@ const translations: Translations = {
     weeklyPerf: "Desempenho Semanal",
     strongestHabits: "Hábitos mais fortes",
     completionWord: "concluído",
-    sponsored: "Patrocinado"
+    sponsored: "Patrocinado",
+    addHabit: "Adicionar Hábito",
+    addHabitTitle: "Novo Hábito",
+    habitName: "Nome do Hábito",
+    cancel: "Cancelar",
+    create: "Criar",
+    creating: "Criando..."
   },
   ar: {
     home: "اليوم",
@@ -263,7 +305,13 @@ const translations: Translations = {
     weeklyPerf: "الأداء الأسبوعي",
     strongestHabits: "أقوى العادات",
     completionWord: "اكتمال",
-    sponsored: "محتوى إعلاني"
+    sponsored: "محتوى إعلاني",
+    addHabit: "إضافة عادة",
+    addHabitTitle: "إضافة عادة جديدة",
+    habitName: "اسم العادة",
+    cancel: "إلغاء",
+    create: "إنشاء",
+    creating: "جاري الإنشاء..."
   }
 };
 

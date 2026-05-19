@@ -1,24 +1,73 @@
-import React from 'react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday } from 'date-fns';
+import React, { useState, useEffect } from 'react';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, isSameDay } from 'date-fns';
 import { useLanguage } from '../context/LanguageContext';
-
+import { useAuth } from '../firebase/AuthContext';
+import { db } from '../firebase/config';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { HabitCompletion } from '../types';
 import AdBanner from '../components/AdBanner';
 
 export default function CalendarView() {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const [completions, setCompletions] = useState<HabitCompletion[]>([]);
+  const [loading, setLoading] = useState(true);
+  
   const today = new Date();
   const monthStart = startOfMonth(today);
   const monthEnd = endOfMonth(today);
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
-  // Simulate a heatmap where some days are more intense
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchMonthCompletions = async () => {
+      setLoading(true);
+      try {
+        // We look for completions in the current month across all habits
+        // This is tricky because completions are nested. 
+        // For the grid, we might want to query a top-level completions collection if it existed.
+        // Since it's nested under habits, we first need to get the user's habits.
+        
+        const habitsSnap = await getDocs(query(collection(db, 'habits'), where('userId', '==', user.uid)));
+        const habitsIds = habitsSnap.docs.map(doc => doc.id);
+        
+        const allCompletions: HabitCompletion[] = [];
+        
+        for (const habitId of habitsIds) {
+          const compSnap = await getDocs(query(
+            collection(db, `habits/${habitId}/completions`),
+            where('userId', '==', user.uid),
+            where('date', '>=', format(monthStart, 'yyyy-MM-dd')),
+            where('date', '<=', format(monthEnd, 'yyyy-MM-dd'))
+          ));
+          
+          compSnap.forEach(doc => {
+            allCompletions.push({ id: doc.id, ...doc.data() } as HabitCompletion);
+          });
+        }
+        
+        setCompletions(allCompletions);
+      } catch (error) {
+        console.error("Error fetching calendar data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMonthCompletions();
+  }, [user]);
+
   const getIntensity = (date: Date) => {
     if (date > today) return 'empty';
-    const rand = Math.random();
-    if (rand > 0.7) return 'high';
-    if (rand > 0.4) return 'medium';
-    if (rand > 0.1) return 'low';
-    return 'none';
+    
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const dayCompletions = completions.filter(c => c.date === dateStr && c.status === 'completed');
+    
+    if (dayCompletions.length === 0) return 'none';
+    if (dayCompletions.length >= 3) return 'high';
+    if (dayCompletions.length >= 2) return 'medium';
+    return 'low';
   };
 
   const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
@@ -38,7 +87,12 @@ export default function CalendarView() {
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-y-3 gap-x-2">
+        <div className="grid grid-cols-7 gap-y-3 gap-x-2 relative min-h-[200px]">
+          {loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-momentum-surface/50 backdrop-blur-[2px] z-10 rounded-xl">
+              <div className="w-8 h-8 border-2 border-momentum-accent border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
           {/* Pad the first days of the week */}
           {Array.from({ length: monthStart.getDay() }).map((_, i) => (
             <div key={`pad-${i}`} className="aspect-square opacity-0"></div>

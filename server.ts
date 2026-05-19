@@ -36,12 +36,12 @@ async function startServer() {
       }
       
       const chat = ai.chats.create({
-        model: "gemini-flash-latest", 
-        history: history || [],
+        model: "gemini-3-flash-preview", 
         config: {
           systemInstruction: "You are an elite, highly-motivating AI habit coach for the 'Momentum' habit tracker app. You help users find consistency, discipline, and achieve their goals. Keep responses concise, actionable, and formatted nicely.",
           temperature: 0.7,
         },
+        history: history || [],
       });
 
       const result = await chat.sendMessage({ message });

@@ -55,12 +55,12 @@ export default function Layout() {
               <NavLink
                 key={item.to}
                 to={item.to}
-                className="relative p-2 flex flex-col items-center gap-1 min-w-[60px]"
+                className="relative py-2 px-1 flex flex-col items-center gap-1 min-w-[50px] flex-1"
               >
                 <div className="relative">
                   <Icon 
                     className={cn(
-                      "w-6 h-6 transition-colors duration-300", 
+                      "w-5 h-5 transition-colors duration-300 sm:w-6 sm:h-6", 
                       isActive ? "text-momentum-accent" : "text-momentum-text-dim"
                     )} 
                     strokeWidth={isActive ? 2.5 : 2}
@@ -74,7 +74,7 @@ export default function Layout() {
                   )}
                 </div>
                 <span className={cn(
-                  "text-[10px] uppercase tracking-wider font-medium transition-colors duration-300",
+                  "text-[8px] sm:text-[10px] uppercase tracking-wider font-medium transition-colors duration-300 text-center",
                   isActive ? "text-momentum-accent font-semibold" : "text-momentum-text-dim"
                 )}>
                   {item.label}
