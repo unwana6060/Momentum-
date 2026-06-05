@@ -17,6 +17,11 @@ import AICoach from './pages/AICoach';
 import Profile from './pages/Profile';
 import WorldClockPage from './pages/WorldClockPage';
 import AuthPage from './pages/AuthPage';
+import About from './pages/About';
+import MenuNavigation from './pages/MenuNavigation';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Contact from './pages/Contact';
+import TermsDisclaimer from './pages/TermsDisclaimer';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -37,13 +42,21 @@ function AppRoutes() {
     <Router>
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
-        <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-          <Route index element={<Home />} />
-          <Route path="calendar" element={<CalendarView />} />
-          <Route path="analytics" element={<Analytics />} />
-          <Route path="coach" element={<AICoach />} />
-          <Route path="clock" element={<WorldClockPage />} />
-          <Route path="profile" element={<Profile />} />
+        <Route path="/" element={<Layout />}>
+          {/* Protected Main App Routes */}
+          <Route index element={<ProtectedRoute><Home /></ProtectedRoute>} />
+          <Route path="calendar" element={<ProtectedRoute><CalendarView /></ProtectedRoute>} />
+          <Route path="analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+          <Route path="coach" element={<ProtectedRoute><AICoach /></ProtectedRoute>} />
+          <Route path="clock" element={<ProtectedRoute><WorldClockPage /></ProtectedRoute>} />
+          <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+
+          {/* Public Compliance & Hub Routes */}
+          <Route path="menu" element={<MenuNavigation />} />
+          <Route path="about" element={<About />} />
+          <Route path="privacy" element={<PrivacyPolicy />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="terms" element={<TermsDisclaimer />} />
         </Route>
       </Routes>
     </Router>

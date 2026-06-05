@@ -50,6 +50,19 @@
         "status": { "type": "string", "enum": ["completed", "missed"] }
       },
       "required": ["userId", "habitId", "date", "completedAt", "status"]
+    },
+    "ContactMessage": {
+      "title": "Contact Message",
+      "description": "WordPress-style contact form message submissions",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "message": { "type": "string" },
+        "createdAt": { "type": "object", "description": "Firestore Timestamp" },
+        "userId": { "type": "string" }
+      },
+      "required": ["name", "email", "message", "createdAt"]
     }
   },
   "firestore": {
@@ -64,6 +77,10 @@
     "/habits/{habitId}/completions/{completionId}": {
       "schema": { "$ref": "#/entities/HabitCompletion" },
       "description": "Daily completions for a habit"
+    },
+    "/contact_messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ContactMessage" },
+      "description": "Feedback and support messages"
     }
   }
 }

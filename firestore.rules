@@ -56,6 +56,13 @@ service cloud.firestore {
         && data.date is string && data.date.size() == 10;
     }
 
+    function isValidContactMessage(data) {
+      return data.keys().hasAll(['name', 'email', 'message', 'createdAt'])
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 200
+        && data.email is string && data.email.size() > 0 && data.email.size() <= 200
+        && data.message is string && data.message.size() > 0 && data.message.size() <= 5000;
+    }
+
     // 1. User Profiles
     match /users/{userId} {
       allow get: if isOwner(userId) || isAdmin();
@@ -82,6 +89,12 @@ service cloud.firestore {
     // 4. System
     match /system/{docId} {
       allow get: if isSignedIn();
+    }
+
+    // 5. Contact Messages (AdSense Compliance Support Form)
+    match /contact_messages/{messageId} {
+      allow create: if isValidContactMessage(incoming());
+      allow read, update, delete: if isAdmin();
     }
   }
 }

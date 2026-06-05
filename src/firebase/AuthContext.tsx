@@ -9,6 +9,7 @@ import {
   signOut as firebaseSignOut,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInAnonymously,
 } from 'firebase/auth';
 import { auth, db } from './config';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -22,6 +23,7 @@ interface AuthContextType {
   signInWithGoogle: () => Promise<void>;
   signInWithEmail: (email: string, pass: string) => Promise<void>;
   registerWithEmail: (email: string, pass: string) => Promise<void>;
+  signInGuest: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -33,6 +35,7 @@ const AuthContext = createContext<AuthContextType>({
   signInWithGoogle: async () => {},
   signInWithEmail: async () => {},
   registerWithEmail: async () => {},
+  signInGuest: async () => {},
   signOut: async () => {},
 });
 
@@ -141,6 +144,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const signInGuest = async () => {
+    try {
+      setError(null);
+      await signInAnonymously(auth);
+    } catch (error: any) {
+      console.error('Error signing in as Guest', error);
+      setError(error.message || 'Guest Sign-In failed');
+      throw error;
+    }
+  };
+
   const signOut = async () => {
     try {
       await firebaseSignOut(auth);
@@ -151,7 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAdmin, loading, error, signInWithGoogle, signInWithEmail, registerWithEmail, signOut }}>
+    <AuthContext.Provider value={{ user, isAdmin, loading, error, signInWithGoogle, signInWithEmail, registerWithEmail, signInGuest, signOut }}>
       {children}
     </AuthContext.Provider>
   );
