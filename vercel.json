@@ -6,7 +6,23 @@
       "destination": "/api/:path*"
     },
     {
-      "source": "/((?!api|assets|.*\\..*).*)",
+      "source": "/ads.txt",
+      "destination": "/ads.txt"
+    },
+    {
+      "source": "/logo.svg",
+      "destination": "/logo.svg"
+    },
+    {
+      "source": "/assets/:path*",
+      "destination": "/assets/:path*"
+    },
+    {
+      "source": "/favicon.ico",
+      "destination": "/favicon.ico"
+    },
+    {
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]
