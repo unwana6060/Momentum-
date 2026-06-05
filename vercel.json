@@ -6,11 +6,7 @@
       "destination": "/api/:path*"
     },
     {
-      "source": "/ads.txt",
-      "destination": "/ads.txt"
-    },
-    {
-      "source": "/((?!assets/|logo.svg|ads.txt|favicon.ico).*)",
+      "source": "/((?!api|assets|.*\\..*).*)",
       "destination": "/index.html"
     }
   ]
