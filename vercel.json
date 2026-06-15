@@ -7,6 +7,26 @@
       "destination": "/api/:path*"
     },
     {
+      "source": "/ads.txt",
+      "destination": "/ads.txt"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/robots.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap.xml"
+    },
+    {
+      "source": "/logo.svg",
+      "destination": "/logo.svg"
+    },
+    {
+      "source": "/favicon.ico",
+      "destination": "/favicon.ico"
+    },
+    {
       "source": "/((?!api|assets|ads\\.txt|logo\\.svg|favicon\\.ico|robots\\.txt|sitemap\\.xml).*)",
       "destination": "/index.html"
     }
